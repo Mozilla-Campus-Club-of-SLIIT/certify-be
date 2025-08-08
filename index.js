@@ -28,6 +28,23 @@ mongoose
   })
   .catch((err) => console.error("MongoDB connection error:", err));
 
+const Certificate = require("./models/Certificate");
+
+// API endpoint to get certificate data as JSON (for frontend)
+app.get("/api/certificate/:credentialId", async (req, res) => {
+  try {
+    const cert = await Certificate.findOne({
+      credentialId: req.params.credentialId,
+    });
+    if (!cert) {
+      return res.status(404).json({ error: "Certificate not found" });
+    }
+    res.json(cert);
+  } catch (err) {
+    res.status(500).json({ error: "Server error" });
+  }
+});
+
 app.get("/", (req, res) => {
   res.send("Hello, Certify!");
 });
