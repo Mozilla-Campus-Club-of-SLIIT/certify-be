@@ -1,2 +1,6 @@
-node_modules/
-.env
+.env.*
+*.env
+
+//ignore python cache
+__pycache__/
+*.py[cod]
