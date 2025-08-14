@@ -36,10 +36,10 @@ def seed_sample_certificate():
     if certificates.count_documents({}) == 0:
         certificates.insert_one({
             "credentialId": str(uuid4()),
-            "name": "Sample",
-            "course": "Sample Course",
+            "name": "Saman Sliva",
+            "course": "Club Member",
             "dateIssued": date.today().isoformat(),
-            "issuer": "sliitmozilla"
+            "issuer": "Mozilla Campus Club SLIIT"
         })
 
 @app.get("/api/certificate/{credentialId}")
