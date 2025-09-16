@@ -13,7 +13,33 @@ load_dotenv()
 MONGODB_URI = os.getenv("MONGODB_URI", "mongodb://localhost:27017")
 PORT = int(os.getenv("PORT", 8000))
 
-app = FastAPI()
+client = MongoClient(MONGODB_URI)
+db = client["certify"]
+
+@asynccontextmanager
+async def lifespan(app: FastAPI):
+    # Startup code: seed sample certificate if empty
+    try:
+        client.admin.command("ping")
+        print("Successfully connected to MongoDB")
+    except Exception as e:
+        print("MongoDB connection failed:", e)
+
+    certificates = db["certificates"]
+    if certificates.count_documents({}) == 0:
+        certificates.insert_one({
+            "credentialId": str(uuid4()),
+            "name": "Saman Sliva",
+            "course": "Club Member",
+            "categoryCode": "LC",
+            "categoryName": "Leadership & Contribution",
+            "dateIssued": date.today().isoformat(),
+            "issuer": "Mozilla Campus Club SLIIT"
+        })
+    yield
+
+
+app = FastAPI(lifespan=lifespan)
 
 # Enable CORS for all origins
 app.add_middleware(
@@ -24,27 +50,9 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-client = MongoClient(MONGODB_URI)
-db = client["certify"]
-
 @app.get("/")
 async def read_root():
     return {"message": "Hello, Certify!"}
-
-
-@asynccontextmanager
-async def lifespan(app: FastAPI):
-    # Startup code: seed sample certificate if empty
-    certificates = db["certificates"]
-    if certificates.count_documents({}) == 0:
-        certificates.insert_one({
-            "credentialId": str(uuid4()),
-            "name": "Saman Sliva",
-            "course": "Club Member",
-            "dateIssued": date.today().isoformat(),
-            "issuer": "Mozilla Campus Club SLIIT"
-        })
-    yield
 
 @app.get("/api/certificate/{credentialId}")
 async def get_certificate(credentialId: str):
