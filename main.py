@@ -6,7 +6,7 @@ from datetime import date
 from uuid import uuid4
 import os
 from contextlib import asynccontextmanager
-
+from models import Certificate
 # Load environment variables from .env file
 load_dotenv()
 
@@ -61,7 +61,7 @@ async def get_certificate(credentialId: str):
     if not cert:
         raise HTTPException(status_code=404, detail="Certificate not found")
     cert["_id"] = str(cert["_id"])  # Convert ObjectId to string if needed
-    return cert
+    return Certificate(**cert)
 
 # Note: To use the PORT variable, run the server with:
 # python -m uvicorn main:app --reload --port %PORT%
