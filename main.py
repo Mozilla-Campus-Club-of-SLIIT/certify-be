@@ -5,6 +5,7 @@ from dotenv import load_dotenv
 from datetime import date
 from uuid import uuid4
 import os
+from contextlib import asynccontextmanager
 
 # Load environment variables from .env file
 load_dotenv()
@@ -30,8 +31,10 @@ db = client["certify"]
 async def read_root():
     return {"message": "Hello, Certify!"}
 
-@app.on_event("startup")
-def seed_sample_certificate():
+
+@asynccontextmanager
+async def lifespan(app: FastAPI):
+    # Startup code: seed sample certificate if empty
     certificates = db["certificates"]
     if certificates.count_documents({}) == 0:
         certificates.insert_one({
@@ -41,6 +44,7 @@ def seed_sample_certificate():
             "dateIssued": date.today().isoformat(),
             "issuer": "Mozilla Campus Club SLIIT"
         })
+    yield
 
 @app.get("/api/certificate/{credentialId}")
 async def get_certificate(credentialId: str):
