@@ -4,6 +4,8 @@ from pymongo import MongoClient
 from dotenv import load_dotenv
 from datetime import date
 from uuid import uuid4
+import random
+import string
 import os
 from contextlib import asynccontextmanager
 from models import Certificate
@@ -15,6 +17,12 @@ PORT = int(os.getenv("PORT", 8000))
 
 client = MongoClient(MONGODB_URI)
 db = client["certify"]
+
+def generate_credential_id() -> str:
+    prefix = random.choice(string.ascii_lowercase)  
+    raw_uuid = str(uuid4()).replace("-", "")  
+    return f"{prefix}{raw_uuid}"
+
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
@@ -28,7 +36,7 @@ async def lifespan(app: FastAPI):
     certificates = db["certificates"]
     if certificates.count_documents({}) == 0:
         certificates.insert_one({
-            "credentialId": str(uuid4()),
+            "credentialId": generate_credential_id(),
             "name": "Saman Sliva",
             "course": "Club Member",
             "categoryCode": "LC",
