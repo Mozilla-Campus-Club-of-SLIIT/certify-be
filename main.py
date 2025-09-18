@@ -1,9 +1,9 @@
 import logging
-from fastapi import FastAPI, HTTPException
+from fastapi import FastAPI, HTTPException, Depends, Request
 from fastapi.middleware.cors import CORSMiddleware
 from pymongo import MongoClient
 from dotenv import load_dotenv
-from datetime import date
+from datetime import date, datetime, timedelta
 from uuid import uuid4
 import random
 import string
@@ -11,11 +11,25 @@ import os
 from contextlib import asynccontextmanager
 from models import Certificate, Signature
 
-# Load environment variables
+from jose import JWTError, jwt
+from passlib.context import CryptContext
+from fastapi.security import OAuth2PasswordBearer, OAuth2PasswordRequestForm
+
+
 load_dotenv()
 
 MONGODB_URI = os.getenv("MONGODB_URI", "mongodb://localhost:27017")
 PORT = int(os.getenv("PORT", 8000))
+
+SECRET_KEY = os.getenv("SECRET_KEY", "super-secret-key-change-this")
+ALGORITHM = "HS256"
+ACCESS_TOKEN_EXPIRE_MINUTES = 60
+
+pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
+
+oauth2_scheme = OAuth2PasswordBearer(tokenUrl="token")
+
+logging.basicConfig(level=logging.INFO, format="%(asctime)s - %(levelname)s - %(message)s")
 
 client = MongoClient(MONGODB_URI)
 db = client["certify"]
@@ -26,6 +40,7 @@ logging.basicConfig(
     datefmt="%Y-%m-%d %H:%M:%S"
 )
 logger = logging.getLogger(__name__)
+
 
 def generate_credential_id() -> str:
     prefix = random.choice(string.ascii_lowercase)
@@ -62,6 +77,32 @@ def get_signatures_by_ids(signature_ids: list) -> list[dict]:
     return signature_docs
 
 
+def verify_password(plain_password, hashed_password):
+    result = pwd_context.verify(plain_password, hashed_password)
+    logging.info("Password verification result: %s", result)
+    return result
+
+
+def create_access_token(data: dict, expires_delta: timedelta | None = None):
+    to_encode = data.copy()
+    expire = datetime.utcnow() + (expires_delta if expires_delta else timedelta(minutes=ACCESS_TOKEN_EXPIRE_MINUTES))
+    to_encode.update({"exp": expire})
+    token = jwt.encode(to_encode, SECRET_KEY, algorithm=ALGORITHM)
+    logging.info("JWT created for sub: %s, role: %s", to_encode.get("sub"), to_encode.get("role"))
+    return token
+
+
+def authenticate_user(email: str, password: str):
+    logging.info("Authenticating user with email: %s", email)
+    user = db["users"].find_one({"email": email})
+    if not user:
+        logging.warning("Authentication failed: user not found for email: %s", email)
+        return None
+    if not verify_password(password, user["password"]):
+        logging.warning("Authentication failed: invalid password for email: %s", email)
+        return None
+    logging.info("Authentication successful for email: %s", email)
+    return user
 
 
 @asynccontextmanager
@@ -103,10 +144,32 @@ async def lifespan(app: FastAPI):
     else:
         logging.info("Certificates collection already has data, skipping seed.")
 
+    users = db["users"]
+    if users.count_documents({}) == 0:
+        fake_users = [
+            {
+                "name": "Admin User",
+                "email": "admin@example.com",
+                "password": pwd_context.hash("1234"),
+                "role": "admin"
+            },
+            {
+                "name": "Regular User",
+                "email": "user@example.com",
+                "password": pwd_context.hash("1234"),
+                "role": "user"
+            }
+        ]
+        users.insert_many(fake_users)
+        logging.info("Inserted sample users: admin@example.com, user@example.com")
+    else:
+        logging.info("Users collection already has data, skipping seed.")
+
     yield
 
 
 app = FastAPI(lifespan=lifespan)
+
 
 # Enable CORS
 app.add_middleware(
@@ -122,6 +185,36 @@ app.add_middleware(
 async def read_root():
     logging.info("Root endpoint '/' was called")
     return {"message": "Hello, Certify!"}
+    
+
+
+@app.post("/api/login")
+async def login(request: Request):
+    try:
+        data = await request.json()
+    except Exception:
+        logging.error("Failed to read JSON body in login request")
+        raise HTTPException(status_code=400, detail="Invalid request payload")
+
+    email = data.get("email")
+    password = data.get("password")
+
+    logging.info("Login attempt for email: %s", email)
+
+    if not email or not password:
+        logging.warning("Login failed: missing email or password for email: %s", email)
+        raise HTTPException(status_code=400, detail="Email and password required")
+
+    user = authenticate_user(email, password)
+    if not user:
+        logging.warning("Login failed: invalid credentials for email: %s", email)
+        raise HTTPException(status_code=401, detail="Invalid credentials")
+
+    token_data = {"sub": user["email"], "role": user["role"]}
+    access_token = create_access_token(token_data)
+
+    logging.info("Login successful for email: %s", email)
+    return {"access_token": access_token, "token_type": "bearer"}
 
 
 @app.get("/api/certificate/{credentialId}")
