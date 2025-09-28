@@ -1,6 +1,6 @@
 import os
 import logging
-import random
+import secrets
 import string
 from uuid import uuid4
 from datetime import date
@@ -49,7 +49,7 @@ collection = db[collection_name]
 
 def generate_credential_id() -> str:
     """Generate a unique credential ID."""
-    prefix = random.choice(string.ascii_lowercase)
+    prefix = secrets.choice(string.ascii_lowercase)
     raw_uuid = str(uuid4()).replace("-", "")
     credential_id = f"{prefix}{raw_uuid}"
     logging.info(f"Generated credential ID: {credential_id}")
