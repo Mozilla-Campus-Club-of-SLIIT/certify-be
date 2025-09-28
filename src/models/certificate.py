@@ -1,5 +1,5 @@
-from pydantic import BaseModel, Field
-from datetime import date
+from pydantic import BaseModel, Field, field_validator
+from datetime import date, datetime
 from typing import List
 from .signature import Signature
 
@@ -13,6 +13,12 @@ class Certificate(BaseModel):
     dateIssued: date = Field(..., description="Date certificate was issued")
     issuer: str = Field(..., description="Certificate issuer")
     signatures: List[Signature] = Field(..., description="List of signature objects")
-    
+
+    @field_validator("dateIssued", mode="before")
+    def parse_date_issued(cls, v):
+        if isinstance(v, str):
+            return datetime.strptime(v.strip(), "%Y-%m-%d").date()
+        return v
+
     class Config:
-        allow_population_by_field_name = True
+        populate_by_name = True
