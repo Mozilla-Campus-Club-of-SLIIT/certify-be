@@ -1,6 +1,7 @@
 from datetime import date
 from contextlib import asynccontextmanager
 import os
+from typing import Optional
 from dotenv import load_dotenv
 from fastapi import HTTPException, FastAPI
 from pymongo import MongoClient
@@ -89,12 +90,10 @@ async def lifespan(app: FastAPI):
 
     yield
 
-def get_certificate_by_credential(credential_id: str) -> dict:
+def get_certificate_by_credential(credential_id: str) -> Optional[dict]:
     cert = db["certificates"].find_one({"credentialId": credential_id})
-    if not cert:
-        raise HTTPException(status_code=404, detail="Certificate not found")
-    cert["_id"] = str(cert["_id"])
-    logger.info("Fetched certificate for credential ID: %s", credential_id)
+    if cert:
+        cert["_id"] = str(cert["_id"])
     return cert
 
 def get_signatures_by_ids(signature_ids: list) -> list[dict]:

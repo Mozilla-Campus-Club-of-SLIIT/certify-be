@@ -43,8 +43,12 @@ async def login(request: Request):
 @app.get("/api/certificate/{credentialId}")
 async def get_certificate(credentialId: str):
     cert_doc = get_certificate_by_credential(credentialId)
+    if not cert_doc:
+        raise HTTPException(status_code=404, detail="Certificate not found")
+    
     signatures = get_signatures_by_ids(cert_doc.get("signatures", []))
     cert_doc["signatures"] = signatures
+    
     return Certificate(**cert_doc)
 
 
