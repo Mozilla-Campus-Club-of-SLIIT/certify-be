@@ -40,8 +40,9 @@ async def read_root():
 async def login(request: Request):
     return await process_login_request(request)
 
-@app.get("/api/certificate/{credentialId}")
+@app.get("/api/certificate/{credential_id}")
 async def get_certificate(credential_id: str):
+    logger.info(credential_id)
     cert_doc = get_certificate_by_credential(credential_id)
     if not cert_doc:
         raise HTTPException(status_code=404, detail="Certificate not found")
