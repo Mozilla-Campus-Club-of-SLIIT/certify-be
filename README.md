@@ -3,11 +3,13 @@
 This is the backend for the Certify project, built with FastAPI and MongoDB.
 
 ## Prerequisites
+
 - Python 3.10+
 - pip
 - MongoDB (local or remote)
 
 ## Setup
+
 1. Install dependencies:
    ```sh
    pip install -r requirements.txt
@@ -19,9 +21,10 @@ This is the backend for the Certify project, built with FastAPI and MongoDB.
    ```
 3. Start the development server:
    ```sh
-   uvicorn main:app --reload --port 8000
+   uvicorn src.main:app --reload --port 8000
    ```
 4. The API will be available at `http://localhost:8000` by default.
 
 ## Deploying to Vercel
+
 - See `vercel.json` for configuration. The entry point is `main.py`.
