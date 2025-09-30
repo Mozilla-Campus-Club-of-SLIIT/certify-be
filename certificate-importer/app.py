@@ -28,6 +28,8 @@ csv_name_col = os.getenv("CSV_NAME_COL")
 csv_email_col = os.getenv("CSV_EMAIL_COL")    
 csv_output_file = os.getenv("CSV_OUTPUT_FILE", "certificates_export.csv")  
 
+base_url = os.getenv("BASE_URL", "https://certify.sliitmozilla.org/certificate/")
+
 logging.basicConfig(
     level=logging.INFO,
     format="%(asctime)s [%(levelname)s] %(message)s",
@@ -99,14 +101,19 @@ for _, row in df.iterrows():
         collection.insert_one(certificate)
         logging.info(f"Inserted certificate for {name}")
 
-        export_data.append({"name": name, "email": email, "credentialId": credential_id})
+        export_data.append({
+            "email": email,
+            "name": name,
+            "credId": credential_id,
+            "credUrl": f"{base_url}{credential_id}"
+        })
 
     except Exception as e:
         logging.error(f"Failed to insert certificate for row {row}: {e}")
 
 if export_data:
     try:
-        export_df = pd.DataFrame(export_data)
+        export_df = pd.DataFrame(export_data, columns=["email", "name", "credId", "credUrl"])
         export_df.to_csv(csv_output_file, index=False)
         logging.info(f"Exported credentials to {csv_output_file}")
     except Exception as e:

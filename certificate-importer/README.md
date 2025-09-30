@@ -1,6 +1,6 @@
 # Mass Certificate Insertion Script
 
-This Python script allows you to **mass-insert certificates into a MongoDB database** from a CSV file and **export the certificate information** (name, email, and generated credential ID) to a CSV file.
+This Python script allows you to **mass-insert certificates into a MongoDB database** from a CSV file and **export the certificate information** (email, name, credential ID, and credential URL) to a CSV file.
 
 ## Requirements
 
@@ -12,9 +12,9 @@ pip install -r requirements.txt
 
 **Dependencies include:**
 
-* `pandas`
-* `python-dotenv`
-* `pymongo`
+- `pandas`
+- `python-dotenv`
+- `pymongo`
 
 ## Setup
 
@@ -39,15 +39,19 @@ COURSE=Club Member
 ISSUER=Mozilla Campus Club SLIIT
 
 # -------------------- CSV Configuration --------------------
-CSV_INPUT_FILE=participants.csv      # Input CSV file with participant data
-CSV_NAME_COL=name                    # Column in CSV containing participant names
-CSV_EMAIL_COL=email                  # Column in CSV containing participant emails 
-CSV_OUTPUT_FILE=certificates_export.csv  # CSV file to export name, email, and credentialId
+CSV_INPUT_FILE=participants.csv        # Input CSV file with participant data
+CSV_NAME_COL=name                      # Column in CSV containing participant names
+CSV_EMAIL_COL=email                    # Column in CSV containing participant emails
+CSV_OUTPUT_FILE=certificates_export.csv  # CSV file to export data
+
+# -------------------- Certificate URL --------------------
+BASE_URL=https://certify.sliitmozilla.org/certificate/
 ```
 
 **Notes:**
 
-* CSV can have **any number of columns**, as long as you correctly specify the `name` and `email` columns inside ```.env``` file.
+- CSV can have **any number of columns**, as long as you correctly specify the `name` and `email` columns inside `.env`.
+- `BASE_URL` is used to build the credential URL for each certificate but is **not stored in MongoDB** — only added in the exported CSV.
 
 ## Usage
 
@@ -68,8 +72,7 @@ Do you want to continue? (y/n):
 3. Certificates are **inserted into MongoDB**, and logs are displayed for each insertion.
 4. After completion, an **export CSV** is generated containing:
 
-| name         | email                                         | credentialId    |
-| ------------ | --------------------------------------------- | --------------- |
-| Saman Silva  | [saman@example.com](mailto:saman@example.com) | a9b7c8d6e5f4... |
-| Nimal Perera | [nimal@example.com](mailto:nimal@example.com) | b8c7d6e5f4a3... |
-
+| email                                         | name         | credId        | credUrl                                                                                                                  |
+| --------------------------------------------- | ------------ | ------------- | ------------------------------------------------------------------------------------------------------------------------ |
+| [saman@example.com](mailto:saman@example.com) | Saman Silva  | a9b7c8d6e5f4… | [https://certify.sliitmozilla.org/certificate/a9b7c8d6e5f4…](https://certify.sliitmozilla.org/certificate/a9b7c8d6e5f4…) |
+| [nimal@example.com](mailto:nimal@example.com) | Nimal Perera | b8c7d6e5f4a3… | [https://certify.sliitmozilla.org/certificate/b8c7d6e5f4a3…](https://certify.sliitmozilla.org/certificate/b8c7d6e5f4a3…) |

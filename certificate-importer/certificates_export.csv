@@ -1,11 +1,11 @@
-name,email,credentialId
-Saman Silva,saman@example.com,wdefb012b14244e00878dd5915601fabe
-Nimal Perera,nimal@example.com,p369e745074c142b8b76a403439e98131
-Kamal Fernando,kamal@example.com,h3febfcbacd414cdea4671170666d7fe5
-Amal Jayasinghe,amal@example.com,z539e391a47c14add986cbab831d640f5
-Chathura Wickramasinghe,chathura@example.com,kb9f5ba833b8340f6b7f47558df749de4
-Dilani Fernando,dilani@example.com,y29b7a7981537435c82f40fa5993bc928
-Ramesh Kumara,ramesh@example.com,d77a6b2762f4e4b79bdc99502607f2eba
-Sanduni Perera,sanduni@example.com,u7c9917c40f614c9a97ff1b31b4171956
-Thilina Jayawardena,thilina@example.com,j0c679217c1714ee9ab952fa33f100af3
-Nadeesha Silva,nadeesha@example.com,rd38d949caa4647db9e57e51fbcc5d650
+email,name,credId,credUrl
+saman@example.com,Saman Silva,td04423b6ca9a4f258159fa5d2f3db0fd,https://certify.sliitmozilla.org/certificate/td04423b6ca9a4f258159fa5d2f3db0fd
+nimal@example.com,Nimal Perera,m594d0f75f1af48f4b1541d2945acdfe8,https://certify.sliitmozilla.org/certificate/m594d0f75f1af48f4b1541d2945acdfe8
+kamal@example.com,Kamal Fernando,o7df0cc47b935438682da12af02f0fe94,https://certify.sliitmozilla.org/certificate/o7df0cc47b935438682da12af02f0fe94
+amal@example.com,Amal Jayasinghe,ha6132d3dfe5f4d5086e21d2424c3dfb0,https://certify.sliitmozilla.org/certificate/ha6132d3dfe5f4d5086e21d2424c3dfb0
+chathura@example.com,Chathura Wickramasinghe,p29884fca8a4a4352aedd36abc3e48b3d,https://certify.sliitmozilla.org/certificate/p29884fca8a4a4352aedd36abc3e48b3d
+dilani@example.com,Dilani Fernando,k8ea73d22d57c4bf8b72c398e81a2c751,https://certify.sliitmozilla.org/certificate/k8ea73d22d57c4bf8b72c398e81a2c751
+ramesh@example.com,Ramesh Kumara,c40471bf2da794540a6c64f3aa712eb0c,https://certify.sliitmozilla.org/certificate/c40471bf2da794540a6c64f3aa712eb0c
+sanduni@example.com,Sanduni Perera,lf257814417bf4a7ab80901d70233f1ab,https://certify.sliitmozilla.org/certificate/lf257814417bf4a7ab80901d70233f1ab
+thilina@example.com,Thilina Jayawardena,f4d395f573d4b4528ba9837736b11631a,https://certify.sliitmozilla.org/certificate/f4d395f573d4b4528ba9837736b11631a
+nadeesha@example.com,Nadeesha Silva,x2c604a79a5924048bea8542916a3115b,https://certify.sliitmozilla.org/certificate/x2c604a79a5924048bea8542916a3115b
