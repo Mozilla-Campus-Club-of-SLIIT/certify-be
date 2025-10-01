@@ -119,21 +119,26 @@ def generate_certificate_image(cert):
         # fallback title position if logo missing
         title_y = 160  # include assumed padding
 
-    # Load fonts
-    try:
-        font_title = ImageFont.truetype("arial.ttf", 40)
-        font_subtitle = ImageFont.truetype("arial.ttf", 16)
-        font_name = ImageFont.truetype("arial.ttf", 60)
-        font_body = ImageFont.truetype("arial.ttf", 18)
-        font_sig_name = ImageFont.truetype("arial.ttf", 15)
-        font_sig_post = ImageFont.truetype("arial.ttf", 14)
-    except IOError:
-        font_title = ImageFont.load_default()
-        font_subtitle = ImageFont.load_default()
-        font_name = ImageFont.load_default()
-        font_body = ImageFont.load_default()
-        font_sig_name = ImageFont.load_default()
-        font_sig_post = ImageFont.load_default()
+    # Load fonts robustly: try arial.ttf, then bundled DejaVuSans, then default
+    font_dir = os.path.join(os.path.dirname(__file__), "../assets/fonts")
+    def load_font(font_name, size):
+        try:
+            return ImageFont.truetype(font_name, size)
+        except IOError:
+            try:
+                # Try bundled DejaVuSans.ttf
+                bundled = os.path.join(font_dir, "DejaVuSans.ttf")
+                return ImageFont.truetype(bundled, size)
+            except IOError:
+                print(f"Font not found: {font_name} and fallback failed, using default.")
+                return ImageFont.load_default()
+
+    font_title = load_font("arial.ttf", 40)
+    font_subtitle = load_font("arial.ttf", 16)
+    font_name = load_font("arial.ttf", 60)
+    font_body = load_font("arial.ttf", 18)
+    font_sig_name = load_font("arial.ttf", 15)
+    font_sig_post = load_font("arial.ttf", 14)
 
     # Draw certificate title - "CERTIFICATE OF PARTICIPATION"
     # Dynamic title: if style provides explicit title use that, else derive from categoryName or fallback
