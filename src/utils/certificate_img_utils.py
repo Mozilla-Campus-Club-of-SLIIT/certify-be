@@ -23,15 +23,15 @@ def get_certificate_style(category_code: str):
             "background": (255, 255, 255),
             "seal_color": (255, 193, 7),
             "subtitle_color": (0, 0, 255),
-            # Layout / size overrides
-            "width": 1200,
-            "height": 800,
-            "element_spacing": 80,
-            "sig_img_size": (130, 55),
+            # Layout / size overrides (zoomed out)
+            "width": 900,
+            "height": 600,
+            "element_spacing": 60,
+            "sig_img_size": (100, 42),
             # Reduced extra padding above event description (was 50)
-            "event_extra_padding": 30,
+            "event_extra_padding": 20,
             # Added extra bottom margin after event paragraph before signatures
-            "event_bottom_spacing": 120
+            "event_bottom_spacing": 80
         },
         "PART": {
             "title": None,
@@ -39,7 +39,13 @@ def get_certificate_style(category_code: str):
             "gradient_end": (255, 165, 0),     # orange
             "background": (255, 255, 255),
             "seal_color": (255, 193, 7),
-            "subtitle_color": (0, 0, 255)
+            "subtitle_color": (0, 0, 255),
+            "width": 900,
+            "height": 600,
+            "element_spacing": 60,
+            "sig_img_size": (100, 42),
+            "event_extra_padding": 20,
+            "event_bottom_spacing": 80
         },
         "ACHV": {
             "title": None,
@@ -47,7 +53,13 @@ def get_certificate_style(category_code: str):
             "gradient_end": (0, 200, 255),
             "background": (245, 250, 255),
             "seal_color": (240, 180, 0),
-            "subtitle_color": (10, 90, 160)
+            "subtitle_color": (10, 90, 160),
+            "width": 900,
+            "height": 600,
+            "element_spacing": 60,
+            "sig_img_size": (100, 42),
+            "event_extra_padding": 20,
+            "event_bottom_spacing": 80
         },
         "MERIT": {
             "title": None,
@@ -55,7 +67,13 @@ def get_certificate_style(category_code: str):
             "gradient_end": (180, 180, 180),
             "background": (255, 255, 255),
             "seal_color": (212, 175, 55),  # metallic gold tone
-            "subtitle_color": (80, 80, 80)
+            "subtitle_color": (80, 80, 80),
+            "width": 900,
+            "height": 600,
+            "element_spacing": 60,
+            "sig_img_size": (100, 42),
+            "event_extra_padding": 20,
+            "event_bottom_spacing": 80
         },
         "EXCEL": {
             "title": None,
@@ -63,7 +81,13 @@ def get_certificate_style(category_code: str):
             "gradient_end": (238, 130, 238),
             "background": (252, 248, 255),
             "seal_color": (180, 60, 200),
-            "subtitle_color": (120, 40, 160)
+            "subtitle_color": (120, 40, 160),
+            "width": 900,
+            "height": 600,
+            "element_spacing": 60,
+            "sig_img_size": (100, 42),
+            "event_extra_padding": 20,
+            "event_bottom_spacing": 80
         }
     }
     # Set new default to HOLAMOZILLA2025 if not matched
@@ -75,8 +99,8 @@ def generate_certificate_image(cert):
     # Style selection based on categoryCode
     style = get_certificate_style(getattr(cert, 'categoryCode', 'PART'))
     # Create a blank themed image using style-provided dimensions if available
-    width = style.get("width", 1200)
-    height = style.get("height", 800)
+    width = style.get("width", 900)
+    height = style.get("height", 600)
     image = Image.new("RGB", (width, height), style.get("background", (255, 255, 255)))
     draw = ImageDraw.Draw(image)
     
@@ -107,17 +131,17 @@ def generate_certificate_image(cert):
     logo_path = os.path.join(os.path.dirname(__file__), "../assets/sliitmozilla-logo.png")
     try:
         logo = Image.open(logo_path).convert("RGBA")
-        logo_width = 200
+        logo_width = 140
         logo_height = int(logo.size[1] * (logo_width / logo.size[0]))
         logo = logo.resize((logo_width, logo_height), Image.LANCZOS)
-        logo_top = 100  # vertical starting point for logo
-        title_top_padding = 50  # extra space between logo bottom and title text
+        logo_top = 60  # vertical starting point for logo
+        title_top_padding = 30  # extra space between logo bottom and title text
         image.paste(logo, (width // 2 - logo_width // 2, logo_top), logo)
         title_y = logo_top + logo_height + title_top_padding
     except Exception as e:
         print("Logo not found or error loading logo:", e)
         # fallback title position if logo missing
-        title_y = 160  # include assumed padding
+        title_y = 100  # include assumed padding
 
     # Load fonts robustly: try arial.ttf, then bundled DejaVuSans, then default
     font_dir = os.path.join(os.path.dirname(__file__), "../assets/fonts")
@@ -140,12 +164,12 @@ def generate_certificate_image(cert):
                 font_logger.error(f"Font not found: {font_name} and fallback '{bundled}' failed for {label or font_name}, using default.")
                 return ImageFont.load_default()
 
-    font_title = load_font("arial.ttf", 40, "title")
-    font_subtitle = load_font("arial.ttf", 16, "subtitle")
-    font_name = load_font("arial.ttf", 60, "name")
-    font_body = load_font("arial.ttf", 18, "body")
-    font_sig_name = load_font("arial.ttf", 15, "signature name")
-    font_sig_post = load_font("arial.ttf", 14, "signature post")
+    font_title = load_font("arial.ttf", 28, "title")
+    font_subtitle = load_font("arial.ttf", 12, "subtitle")
+    font_name = load_font("arial.ttf", 40, "name")
+    font_body = load_font("arial.ttf", 13, "body")
+    font_sig_name = load_font("arial.ttf", 11, "signature name")
+    font_sig_post = load_font("arial.ttf", 10, "signature post")
 
     # Draw certificate title - "CERTIFICATE OF PARTICIPATION"
     # Dynamic title: if style provides explicit title use that, else derive from categoryName or fallback
@@ -175,8 +199,8 @@ def generate_certificate_image(cert):
     # Draw event description - with red highlight for event name
     # Add extra padding above event text for better visual separation from the name
     # Extra vertical space between recipient name and event description
-    # Reduced from 50 -> 30 (can be overridden per style via 'event_extra_padding')
-    event_extra_padding = style.get("event_extra_padding", 30)
+    # Reduced from 50 -> 20 (can be overridden per style via 'event_extra_padding')
+    event_extra_padding = style.get("event_extra_padding", 20)
     event_y = name_y + element_spacing + event_extra_padding
     # Dynamic event sentence; allow for future templating
     course = getattr(cert, 'course', 'the event')
@@ -224,11 +248,11 @@ def generate_certificate_image(cert):
     # Allow a larger adjustable gap below the event description before signatures
     event_bottom_spacing = style.get("event_bottom_spacing", element_spacing + 40)  # default adds extra 40px
     sig_y = event_y + event_bottom_spacing
-    sig_x_left = 180
-    sig_x_right = width - 320
+    sig_x_left = 120
+    sig_x_right = width - 220
     # Signature image size (style can override)
-    sig_img_size = style.get("sig_img_size", (130, 55))
-    seal_radius = 32
+    sig_img_size = style.get("sig_img_size", (100, 42))
+    seal_radius = 22
     seal_center_x = width // 2
 
     # Estimate total height of the lower block (signatures + seal section) to balance vertically
