@@ -121,24 +121,31 @@ def generate_certificate_image(cert):
 
     # Load fonts robustly: try arial.ttf, then bundled DejaVuSans, then default
     font_dir = os.path.join(os.path.dirname(__file__), "../assets/fonts")
-    def load_font(font_name, size):
+    import logging
+    font_logger = logging.getLogger("certify.font")
+    def load_font(font_name, size, label=None):
         try:
-            return ImageFont.truetype(font_name, size)
+            font_logger.info(f"Trying to load font '{font_name}' for {label or font_name} at size {size}")
+            f = ImageFont.truetype(font_name, size)
+            font_logger.info(f"Loaded font '{font_name}' for {label or font_name}")
+            return f
         except IOError:
             try:
-                # Try bundled DejaVuSans.ttf
                 bundled = os.path.join(font_dir, "DejaVuSans.ttf")
-                return ImageFont.truetype(bundled, size)
+                font_logger.warning(f"Font '{font_name}' not found for {label or font_name}, trying fallback '{bundled}'")
+                f = ImageFont.truetype(bundled, size)
+                font_logger.info(f"Loaded fallback font '{bundled}' for {label or font_name}")
+                return f
             except IOError:
-                print(f"Font not found: {font_name} and fallback failed, using default.")
+                font_logger.error(f"Font not found: {font_name} and fallback '{bundled}' failed for {label or font_name}, using default.")
                 return ImageFont.load_default()
 
-    font_title = load_font("arial.ttf", 40)
-    font_subtitle = load_font("arial.ttf", 16)
-    font_name = load_font("arial.ttf", 60)
-    font_body = load_font("arial.ttf", 18)
-    font_sig_name = load_font("arial.ttf", 15)
-    font_sig_post = load_font("arial.ttf", 14)
+    font_title = load_font("arial.ttf", 40, "title")
+    font_subtitle = load_font("arial.ttf", 16, "subtitle")
+    font_name = load_font("arial.ttf", 60, "name")
+    font_body = load_font("arial.ttf", 18, "body")
+    font_sig_name = load_font("arial.ttf", 15, "signature name")
+    font_sig_post = load_font("arial.ttf", 14, "signature post")
 
     # Draw certificate title - "CERTIFICATE OF PARTICIPATION"
     # Dynamic title: if style provides explicit title use that, else derive from categoryName or fallback
