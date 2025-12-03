@@ -47,6 +47,20 @@ def get_certificate_style(category_code: str):
             "event_extra_padding": 20,
             "event_bottom_spacing": 80
         },
+        "APPRECIATION": {
+            "title": None,
+            "gradient_start": (30, 144, 255),  # dodger blue
+            "gradient_end": (72, 61, 139),     # dark slate blue
+            "background": (255, 255, 255),     # white background for clean appreciation cards
+            "seal_color": (240, 180, 0),
+            "subtitle_color": (40, 40, 40),
+            "width": 900,
+            "height": 600,
+            "element_spacing": 60,
+            "sig_img_size": (100, 42),
+            "event_extra_padding": 20,
+            "event_bottom_spacing": 80
+        },
         "ACHV": {
             "title": None,
             "gradient_start": (0, 90, 170),

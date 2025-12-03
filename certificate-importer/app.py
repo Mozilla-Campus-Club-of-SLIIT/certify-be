@@ -36,7 +36,9 @@ logging.basicConfig(
     handlers=[logging.StreamHandler()]
 )
 
-uri = f"mongodb://{username}:{password}@{host}:{port}/"
+#uri = f"mongodb://{username}:{password}@{host}:{port}/"
+uri = f"mongodb+srv://{username}:{password}@{host}/{db_name}?retryWrites=true&w=majority"
+
 
 try:
     client = MongoClient(uri)
