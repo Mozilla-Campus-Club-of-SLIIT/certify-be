@@ -1,0 +1,39 @@
+# Lefthook configuration for git hooks
+# Install: lefthook install
+# Documentation: https://github.com/evilmartians/lefthook
+
+pre-commit:
+  parallel: true
+  commands:
+    lint:
+      glob: "*.py"
+      run: ruff check {staged_files}
+      stage_fixed: true
+    format-check:
+      glob: "*.py"
+      run: ruff format --check {staged_files}
+
+commit-msg:
+  commands:
+    commitlint:
+      run: |
+        # Enforce conventional commits: type(scope): message
+        # Valid types: feat, fix, docs, style, refactor, test, chore, ci, build, perf
+        message=$(cat {1})
+        pattern="^(feat|fix|docs|style|refactor|test|chore|ci|build|perf)(\(.+\))?: .+"
+        if ! echo "$message" | grep -qE "$pattern"; then
+          echo ""
+          echo "ERROR: Commit message does not follow conventional commit format!"
+          echo ""
+          echo "Expected format: type(scope): description"
+          echo ""
+          echo "Valid types: feat, fix, docs, style, refactor, test, chore, ci, build, perf"
+          echo ""
+          echo "Examples:"
+          echo "  feat: add user authentication"
+          echo "  fix(api): resolve certificate generation issue"
+          echo "  docs: update README with setup instructions"
+          echo ""
+          exit 1
+        fi
+

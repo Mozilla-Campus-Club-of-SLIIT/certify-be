@@ -1,5 +1,6 @@
 from pydantic import BaseModel, Field
 
+
 class Signature(BaseModel):
     id: str = Field(..., description="Unique ID of the signature document")
     name: str = Field(..., description="Name of the signer")

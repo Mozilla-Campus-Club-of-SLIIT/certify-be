@@ -1,6 +1,7 @@
-from PIL import Image, ImageDraw, ImageFont, ImageFilter
 import io
-import base64
+
+from PIL import Image, ImageDraw, ImageFont
+
 
 # Category-based style configuration
 def get_certificate_style(category_code: str):
@@ -19,7 +20,7 @@ def get_certificate_style(category_code: str):
             # Title can still be overridden by style; fallback is dynamic categoryName-based
             "title": None,
             "gradient_start": (138, 43, 226),  # purple
-            "gradient_end": (255, 165, 0),     # orange
+            "gradient_end": (255, 165, 0),  # orange
             "background": (255, 255, 255),
             "seal_color": (255, 193, 7),
             "subtitle_color": (0, 0, 255),
@@ -31,12 +32,12 @@ def get_certificate_style(category_code: str):
             # Reduced extra padding above event description (was 50)
             "event_extra_padding": 20,
             # Added extra bottom margin after event paragraph before signatures
-            "event_bottom_spacing": 80
+            "event_bottom_spacing": 80,
         },
         "PART": {
             "title": None,
             "gradient_start": (138, 43, 226),  # purple
-            "gradient_end": (255, 165, 0),     # orange
+            "gradient_end": (255, 165, 0),  # orange
             "background": (255, 255, 255),
             "seal_color": (255, 193, 7),
             "subtitle_color": (0, 0, 255),
@@ -45,13 +46,13 @@ def get_certificate_style(category_code: str):
             "element_spacing": 60,
             "sig_img_size": (100, 42),
             "event_extra_padding": 20,
-            "event_bottom_spacing": 80
+            "event_bottom_spacing": 80,
         },
         "APPRECIATION": {
             "title": None,
             "gradient_start": (30, 144, 255),  # dodger blue
-            "gradient_end": (72, 61, 139),     # dark slate blue
-            "background": (255, 255, 255),     # white background for clean appreciation cards
+            "gradient_end": (72, 61, 139),  # dark slate blue
+            "background": (255, 255, 255),  # white background for clean appreciation cards
             "seal_color": (240, 180, 0),
             "subtitle_color": (40, 40, 40),
             "width": 900,
@@ -59,7 +60,7 @@ def get_certificate_style(category_code: str):
             "element_spacing": 60,
             "sig_img_size": (100, 42),
             "event_extra_padding": 20,
-            "event_bottom_spacing": 80
+            "event_bottom_spacing": 80,
         },
         "ACHV": {
             "title": None,
@@ -73,7 +74,7 @@ def get_certificate_style(category_code: str):
             "element_spacing": 60,
             "sig_img_size": (100, 42),
             "event_extra_padding": 20,
-            "event_bottom_spacing": 80
+            "event_bottom_spacing": 80,
         },
         "MERIT": {
             "title": None,
@@ -87,7 +88,7 @@ def get_certificate_style(category_code: str):
             "element_spacing": 60,
             "sig_img_size": (100, 42),
             "event_extra_padding": 20,
-            "event_bottom_spacing": 80
+            "event_bottom_spacing": 80,
         },
         "EXCEL": {
             "title": None,
@@ -101,23 +102,25 @@ def get_certificate_style(category_code: str):
             "element_spacing": 60,
             "sig_img_size": (100, 42),
             "event_extra_padding": 20,
-            "event_bottom_spacing": 80
-        }
+            "event_bottom_spacing": 80,
+        },
     }
     # Set new default to HOLAMOZILLA2025 if not matched
     default_style = styles.get("HOLAMOZILLA2025")
     return styles.get(category_code.upper(), default_style)
 
+
 def generate_certificate_image(cert):
     import os
+
     # Style selection based on categoryCode
-    style = get_certificate_style(getattr(cert, 'categoryCode', 'PART'))
+    style = get_certificate_style(getattr(cert, "categoryCode", "PART"))
     # Create a blank themed image using style-provided dimensions if available
     width = style.get("width", 900)
     height = style.get("height", 600)
     image = Image.new("RGB", (width, height), style.get("background", (255, 255, 255)))
     draw = ImageDraw.Draw(image)
-    
+
     # Add colorful gradient borders (top and bottom) - based on style gradient
     border_height = 15
     gs = style["gradient_start"]
@@ -129,18 +132,22 @@ def generate_certificate_image(cert):
         g = int(gs[1] + (ge[1] - gs[1]) * ratio)
         b = int(gs[2] + (ge[2] - gs[2]) * ratio)
         draw.line([(0, i), (width, i)], fill=(r, g, b), width=1)
-    
+
     # Bottom border - same gradient
     for i in range(border_height):
         ratio = i / border_height
         r = int(gs[0] + (ge[0] - gs[0]) * ratio)
         g = int(gs[1] + (ge[1] - gs[1]) * ratio)
         b = int(gs[2] + (ge[2] - gs[2]) * ratio)
-        draw.line([(0, height - border_height + i), (width, height - border_height + i)], fill=(r, g, b), width=1)
+        draw.line(
+            [(0, height - border_height + i), (width, height - border_height + i)],
+            fill=(r, g, b),
+            width=1,
+        )
 
     # Define consistent spacing (style can override)
     element_spacing = style.get("element_spacing", 80)
-    
+
     # Load and paste logo
     logo_path = os.path.join(os.path.dirname(__file__), "../assets/sliitmozilla-logo.png")
     try:
@@ -160,22 +167,30 @@ def generate_certificate_image(cert):
     # Load fonts robustly: try arial.ttf, then bundled DejaVuSans, then default
     font_dir = os.path.join(os.path.dirname(__file__), "../assets/fonts")
     import logging
+
     font_logger = logging.getLogger("certify.font")
+
     def load_font(font_name, size, label=None):
         try:
-            font_logger.info(f"Trying to load font '{font_name}' for {label or font_name} at size {size}")
+            font_logger.info(
+                f"Trying to load font '{font_name}' for {label or font_name} at size {size}"
+            )
             f = ImageFont.truetype(font_name, size)
             font_logger.info(f"Loaded font '{font_name}' for {label or font_name}")
             return f
-        except IOError:
+        except OSError:
             try:
                 bundled = os.path.join(font_dir, "DejaVuSans.ttf")
-                font_logger.warning(f"Font '{font_name}' not found for {label or font_name}, trying fallback '{bundled}'")
+                font_logger.warning(
+                    f"Font '{font_name}' not found for {label or font_name}, trying fallback '{bundled}'"
+                )
                 f = ImageFont.truetype(bundled, size)
                 font_logger.info(f"Loaded fallback font '{bundled}' for {label or font_name}")
                 return f
-            except IOError:
-                font_logger.error(f"Font not found: {font_name} and fallback '{bundled}' failed for {label or font_name}, using default.")
+            except OSError:
+                font_logger.error(
+                    f"Font not found: {font_name} and fallback '{bundled}' failed for {label or font_name}, using default."
+                )
                 return ImageFont.load_default()
 
     font_title = load_font("arial.ttf", 28, "title")
@@ -187,7 +202,9 @@ def generate_certificate_image(cert):
 
     # Draw certificate title - "CERTIFICATE OF PARTICIPATION"
     # Dynamic title: if style provides explicit title use that, else derive from categoryName or fallback
-    dynamic_title = f"{getattr(cert, 'categoryName', getattr(cert, 'categoryCode', 'PARTICIPATION')).upper()}"
+    dynamic_title = (
+        f"{getattr(cert, 'categoryName', getattr(cert, 'categoryCode', 'PARTICIPATION')).upper()}"
+    )
     title_text = style.get("title") or dynamic_title
     title_bbox = draw.textbbox((0, 0), title_text, font=font_title)
     title_width = title_bbox[2] - title_bbox[0]
@@ -202,7 +219,12 @@ def generate_certificate_image(cert):
     subtitle_width = subtitle_bbox[2] - subtitle_bbox[0]
     # Force subtitle color to black (request override ignoring style color)
     subtitle_color = (0, 0, 0)
-    draw.text((width // 2 - subtitle_width // 2, subtitle_y), subtitle_text, font=font_subtitle, fill=subtitle_color)
+    draw.text(
+        (width // 2 - subtitle_width // 2, subtitle_y),
+        subtitle_text,
+        font=font_subtitle,
+        fill=subtitle_color,
+    )
 
     # Draw recipient name (larger, bold style)
     name_y = subtitle_y + element_spacing
@@ -217,7 +239,7 @@ def generate_certificate_image(cert):
     event_extra_padding = style.get("event_extra_padding", 20)
     event_y = name_y + element_spacing + event_extra_padding
     # Dynamic event sentence; allow for future templating
-    course = getattr(cert, 'course', 'the event')
+    course = getattr(cert, "course", "the event")
     event_text = f"This is to certify that {cert.name} {course}."
     # Wrap text if too long
     event_bbox = draw.textbbox((0, 0), event_text, font=font_body)
@@ -228,15 +250,15 @@ def generate_certificate_image(cert):
         lines = []
         current_line = []
         for word in words:
-            test_line = ' '.join(current_line + [word])
+            test_line = " ".join(current_line + [word])
             test_bbox = draw.textbbox((0, 0), test_line, font=font_body)
             if test_bbox[2] - test_bbox[0] < width - 300:
                 current_line.append(word)
             else:
-                lines.append(' '.join(current_line))
+                lines.append(" ".join(current_line))
                 current_line = [word]
-        lines.append(' '.join(current_line))
-        
+        lines.append(" ".join(current_line))
+
         y_offset = event_y
         for line in lines:
             line_bbox = draw.textbbox((0, 0), line, font=font_body)
@@ -244,23 +266,34 @@ def generate_certificate_image(cert):
             draw.text((width // 2 - line_width // 2, y_offset), line, font=font_body, fill="black")
             y_offset += 20
     else:
-        draw.text((width // 2 - event_width // 2, event_y), event_text, font=font_body, fill="black")
+        draw.text(
+            (width // 2 - event_width // 2, event_y), event_text, font=font_body, fill="black"
+        )
 
     # Measure baseline metrics for later vertical balancing
     date_str = str(cert.dateIssued)
     date_bbox_tmp = draw.textbbox((0, 0), date_str, font=font_body)
     date_height = date_bbox_tmp[3] - date_bbox_tmp[1]
-    sig_name_h = draw.textbbox((0, 0), "Ag", font=font_sig_name)[3] - draw.textbbox((0, 0), "Ag", font=font_sig_name)[1]
-    sig_post_h = draw.textbbox((0, 0), "Ag", font=font_sig_post)[3] - draw.textbbox((0, 0), "Ag", font=font_sig_post)[1]
+    sig_name_h = (
+        draw.textbbox((0, 0), "Ag", font=font_sig_name)[3]
+        - draw.textbbox((0, 0), "Ag", font=font_sig_name)[1]
+    )
+    sig_post_h = (
+        draw.textbbox((0, 0), "Ag", font=font_sig_post)[3]
+        - draw.textbbox((0, 0), "Ag", font=font_sig_post)[1]
+    )
 
     # Draw signatures (base64 images) with debug logging - equal spacing from event text
     import logging
+
     logger = logging.getLogger("certify.signature")
-    signatures = getattr(cert, 'signatures', [])
+    signatures = getattr(cert, "signatures", [])
     logger.info(f"Signature count: {len(signatures)}")
     # Position signatures with consistent spacing below event text
     # Allow a larger adjustable gap below the event description before signatures
-    event_bottom_spacing = style.get("event_bottom_spacing", element_spacing + 40)  # default adds extra 40px
+    event_bottom_spacing = style.get(
+        "event_bottom_spacing", element_spacing + 40
+    )  # default adds extra 40px
     sig_y = event_y + event_bottom_spacing
     sig_x_left = 120
     sig_x_right = width - 220
@@ -288,85 +321,106 @@ def generate_certificate_image(cert):
     seal_y = sig_y + sig_img_size[1] // 2  # center vertically in the signature image row
 
     def fix_base64_padding(b64_string):
-        return b64_string + '=' * (-len(b64_string) % 4)
-    
+        return b64_string + "=" * (-len(b64_string) % 4)
+
     def strip_data_uri(b64_string):
         """Remove data URI prefix like 'data:image/png;base64,' from base64 string"""
-        if ',' in b64_string and b64_string.startswith('data:'):
-            return b64_string.split(',', 1)[1]
+        if "," in b64_string and b64_string.startswith("data:"):
+            return b64_string.split(",", 1)[1]
         return b64_string
 
     # Draw yellow circular seal (after potential shift) centered between signatures in the SAME ROW
     seal_color = style.get("seal_color", (255, 193, 7))
     outline_color = (
-        max(0, seal_color[0]-35),
-        max(0, seal_color[1]-35),
-        max(0, seal_color[2]-35)
+        max(0, seal_color[0] - 35),
+        max(0, seal_color[1] - 35),
+        max(0, seal_color[2] - 35),
     )
     draw.ellipse(
-        [seal_center_x - seal_radius, seal_y - seal_radius,
-         seal_center_x + seal_radius, seal_y + seal_radius],
+        [
+            seal_center_x - seal_radius,
+            seal_y - seal_radius,
+            seal_center_x + seal_radius,
+            seal_y + seal_radius,
+        ],
         fill=seal_color,
         outline=outline_color,
-        width=2
+        width=2,
     )
     # We'll draw the date later below the entire signature block for cleaner hierarchy
     left_post_bottom = sig_y + sig_img_size[1]  # will update once left signature extras drawn
     right_post_bottom = sig_y + sig_img_size[1]
 
     if len(signatures) > 0:
-        logger.info(f"Left signature: {signatures[0].name}, has image: {bool(signatures[0].image_b64)}")
+        logger.info(
+            f"Left signature: {signatures[0].name}, has image: {bool(signatures[0].image_b64)}"
+        )
         logger.info(f"Left signature base64 starts: {signatures[0].image_b64[:30]}")
         try:
             import base64
             from io import BytesIO
+
             clean_b64 = strip_data_uri(signatures[0].image_b64)
             sig_img_data = base64.b64decode(fix_base64_padding(clean_b64))
-            sig_img = Image.open(BytesIO(sig_img_data)).convert("RGBA").resize(sig_img_size, Image.LANCZOS)
+            sig_img = (
+                Image.open(BytesIO(sig_img_data))
+                .convert("RGBA")
+                .resize(sig_img_size, Image.LANCZOS)
+            )
             image.paste(sig_img, (sig_x_left, sig_y), sig_img)
         except Exception as e:
             logger.error(f"Error loading left signature image: {e}")
         # Draw line below signature
         line_y = sig_y + sig_img_size[1] + 5
-        draw.line([(sig_x_left, line_y), (sig_x_left + sig_img_size[0], line_y)], fill="black", width=1)
+        draw.line(
+            [(sig_x_left, line_y), (sig_x_left + sig_img_size[0], line_y)], fill="black", width=1
+        )
         # Centered name and post below line
         left_name = signatures[0].name
-        name_bbox = draw.textbbox((0,0), left_name, font=font_sig_name)
+        name_bbox = draw.textbbox((0, 0), left_name, font=font_sig_name)
         name_w = name_bbox[2] - name_bbox[0]
         name_x = sig_x_left + (sig_img_size[0] - name_w) // 2
         draw.text((name_x, line_y + 5), left_name, font=font_sig_name, fill="black")
         left_post = signatures[0].post
-        post_text_bbox = draw.textbbox((0,0), left_post, font=font_sig_post)
+        post_text_bbox = draw.textbbox((0, 0), left_post, font=font_sig_post)
         post_w = post_text_bbox[2] - post_text_bbox[0]
         post_x = sig_x_left + (sig_img_size[0] - post_w) // 2
         draw.text((post_x, line_y + 23), left_post, font=font_sig_post, fill="black")
-        left_post_bottom = line_y + 23 + (post_text_bbox[3]-post_text_bbox[1])
+        left_post_bottom = line_y + 23 + (post_text_bbox[3] - post_text_bbox[1])
 
     if len(signatures) > 1:
-        logger.info(f"Right signature: {signatures[1].name}, has image: {bool(signatures[1].image_b64)}")
+        logger.info(
+            f"Right signature: {signatures[1].name}, has image: {bool(signatures[1].image_b64)}"
+        )
         logger.info(f"Right signature base64 starts: {signatures[1].image_b64[:30]}")
         try:
             clean_b64 = strip_data_uri(signatures[1].image_b64)
             sig_img_data = base64.b64decode(fix_base64_padding(clean_b64))
-            sig_img = Image.open(BytesIO(sig_img_data)).convert("RGBA").resize(sig_img_size, Image.LANCZOS)
+            sig_img = (
+                Image.open(BytesIO(sig_img_data))
+                .convert("RGBA")
+                .resize(sig_img_size, Image.LANCZOS)
+            )
             image.paste(sig_img, (sig_x_right, sig_y), sig_img)
         except Exception as e:
             logger.error(f"Error loading right signature image: {e}")
         # Draw line below signature
         line_y = sig_y + sig_img_size[1] + 5
-        draw.line([(sig_x_right, line_y), (sig_x_right + sig_img_size[0], line_y)], fill="black", width=1)
+        draw.line(
+            [(sig_x_right, line_y), (sig_x_right + sig_img_size[0], line_y)], fill="black", width=1
+        )
         # Centered name and post below line
         right_name = signatures[1].name
-        r_name_bbox = draw.textbbox((0,0), right_name, font=font_sig_name)
+        r_name_bbox = draw.textbbox((0, 0), right_name, font=font_sig_name)
         r_name_w = r_name_bbox[2] - r_name_bbox[0]
         r_name_x = sig_x_right + (sig_img_size[0] - r_name_w) // 2
         draw.text((r_name_x, line_y + 5), right_name, font=font_sig_name, fill="black")
         right_post = signatures[1].post
-        post_text_bbox_r = draw.textbbox((0,0), right_post, font=font_sig_post)
+        post_text_bbox_r = draw.textbbox((0, 0), right_post, font=font_sig_post)
         r_post_w = post_text_bbox_r[2] - post_text_bbox_r[0]
         r_post_x = sig_x_right + (sig_img_size[0] - r_post_w) // 2
         draw.text((r_post_x, line_y + 23), right_post, font=font_sig_post, fill="black")
-        right_post_bottom = line_y + 23 + (post_text_bbox_r[3]-post_text_bbox_r[1])
+        right_post_bottom = line_y + 23 + (post_text_bbox_r[3] - post_text_bbox_r[1])
 
     # Draw date centered below the lowest signature text (or below seal if no signatures)
     lowest = max(left_post_bottom, right_post_bottom)

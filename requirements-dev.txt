@@ -1,0 +1,21 @@
+# Development dependencies
+# Install: pip install --upgrade pip && pip install -r requirements-dev.txt
+
+pip>=25.0
+
+# Linting and formatting
+ruff>=0.8.0
+
+# Type checking
+mypy>=1.13.0
+
+# Testing
+pytest>=8.3.0
+pytest-asyncio>=0.24.0
+httpx>=0.28.0
+
+# Security auditing
+pip-audit>=2.7.0
+
+# Git hooks
+lefthook>=1.8.0

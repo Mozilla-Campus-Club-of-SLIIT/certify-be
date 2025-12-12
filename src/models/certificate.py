@@ -1,7 +1,9 @@
-from pydantic import BaseModel, Field, field_validator
 from datetime import date, datetime
-from typing import List
+
+from pydantic import BaseModel, Field, field_validator
+
 from .signature import Signature
+
 
 class Certificate(BaseModel):
     id: str = Field(..., alias="_id", description="MongoDB ObjectId")
@@ -12,7 +14,7 @@ class Certificate(BaseModel):
     categoryName: str = Field(..., description="Full name of certificate type")
     dateIssued: date = Field(..., description="Date certificate was issued")
     issuer: str = Field(..., description="Certificate issuer")
-    signatures: List[Signature] = Field(..., description="List of signature objects")
+    signatures: list[Signature] = Field(..., description="List of signature objects")
 
     @field_validator("dateIssued", mode="before")
     def parse_date_issued(cls, v):

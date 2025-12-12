@@ -1,30 +1,35 @@
-import os
-from fastapi import HTTPException, Request
-from passlib.context import CryptContext
-from fastapi.security import OAuth2PasswordBearer
-from jose import jwt
 from datetime import datetime, timedelta, timezone
 
-from src.config import SECRET_KEY, ALGORITHM, ACCESS_TOKEN_EXPIRE_MINUTES
-from src.utils.logging_utils import setup_logging
+import jwt
+from fastapi import HTTPException, Request
+from fastapi.security import OAuth2PasswordBearer
+from passlib.context import CryptContext
+
+from src.config import ACCESS_TOKEN_EXPIRE_MINUTES, ALGORITHM, SECRET_KEY
 from src.utils.db_utils import get_user_by_email
+from src.utils.logging_utils import setup_logging
 
 logger = setup_logging(__name__)
 pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
 oauth2_scheme = OAuth2PasswordBearer(tokenUrl="token")
+
 
 def verify_password(plain_password, hashed_password):
     result = pwd_context.verify(plain_password, hashed_password)
     logger.info("Password verification result: %s", result)
     return result
 
+
 def create_access_token(data: dict, expires_delta: timedelta | None = None):
     to_encode = data.copy()
-    expire = datetime.now(timezone.utc) + (expires_delta if expires_delta else timedelta(minutes=ACCESS_TOKEN_EXPIRE_MINUTES))
+    expire = datetime.now(timezone.utc) + (
+        expires_delta if expires_delta else timedelta(minutes=ACCESS_TOKEN_EXPIRE_MINUTES)
+    )
     to_encode.update({"exp": expire})
     token = jwt.encode(to_encode, SECRET_KEY, algorithm=ALGORITHM)
     logger.info("JWT created for sub: %s, role: %s", to_encode.get("sub"), to_encode.get("role"))
     return token
+
 
 def authenticate_user(email: str, password: str):
     logger.info("Authenticating user with email: %s", email)
@@ -38,12 +43,13 @@ def authenticate_user(email: str, password: str):
     logger.info("Authentication successful for email: %s", email)
     return user
 
+
 async def process_login_request(request: Request):
     try:
         data = await request.json()
-    except Exception:
+    except Exception as e:
         logger.error("Failed to read JSON body in login request")
-        raise HTTPException(status_code=400, detail="Invalid request payload")
+        raise HTTPException(status_code=400, detail="Invalid request payload") from e
 
     email = data.get("email")
     password = data.get("password")

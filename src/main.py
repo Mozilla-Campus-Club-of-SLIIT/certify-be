@@ -1,24 +1,19 @@
 from fastapi import FastAPI, HTTPException, Request
 from fastapi.middleware.cors import CORSMiddleware
 
-from src.config import PORT
 from src.models import Certificate
 from src.utils import (
-    setup_logging,
-    setup_db,
     get_certificate_by_credential,
     get_signatures_by_ids,
-    lifespan
+    lifespan,
+    process_login_request,
+    setup_db,
+    setup_logging,
 )
-from src.utils import (
-    authenticate_user,
-    create_access_token,
-    process_login_request
-)
-
+from src.utils.certificate_img_utils import generate_certificate_image
 
 logger = setup_logging(__name__)
-db,client = setup_db()
+db, client = setup_db()
 app = FastAPI(lifespan=lifespan)
 
 # Enable CORS
@@ -35,12 +30,12 @@ app.add_middleware(
 async def read_root():
     logger.info("Root endpoint '/' was called")
     return {"message": "Hello, Certify!"}
-    
+
+
 @app.post("/api/login")
 async def login(request: Request):
     return await process_login_request(request)
 
-from src.utils.certificate_img_utils import generate_certificate_image
 
 @app.get("/api/certificate/{credential_id}")
 async def get_certificate(credential_id: str):
