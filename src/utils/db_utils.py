@@ -120,3 +120,29 @@ def get_user_by_email(email: str):
     else:
         logger.warning("No user found with email: %s", email)
     return user
+
+
+def get_certificates_by_member(member_name: str) -> list[dict]:
+    """Get all certificates/achievements for a member by name.
+    
+    Args:
+        member_name: The name of the member to search for (case-insensitive).
+        
+    Returns:
+        List of certificate documents for the member.
+    """
+    # Case-insensitive search using regex
+    certificates = list(db["certificates"].find({
+        "name": {"$regex": f"^{member_name}$", "$options": "i"}
+    }))
+    
+    for cert in certificates:
+        cert["_id"] = str(cert["_id"])
+    
+    logger.info(
+        "Found %d certificate(s) for member: %s",
+        len(certificates),
+        member_name
+    )
+    
+    return certificates

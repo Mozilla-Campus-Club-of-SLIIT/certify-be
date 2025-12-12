@@ -7,6 +7,7 @@ from src.utils import (
     setup_logging,
     setup_db,
     get_certificate_by_credential,
+    get_certificates_by_member,
     get_signatures_by_ids,
     lifespan
 )
@@ -59,6 +60,48 @@ async def get_certificate(credential_id: str):
     cert_dict = cert.dict(by_alias=True)
     cert_dict["image_b64"] = img_b64
     return cert_dict
+
+
+@app.get("/api/member/{member_name}/achievements")
+async def get_member_achievements(member_name: str):
+    """Get all certificates/achievements for a member by name.
+    
+    Args:
+        member_name: The name of the member (URL encoded if contains spaces).
+        
+    Returns:
+        List of achievements with certificate details and generated images.
+    """
+    logger.info("Fetching achievements for member: %s", member_name)
+    
+    certificates = get_certificates_by_member(member_name)
+    
+    if not certificates:
+        raise HTTPException(
+            status_code=404,
+            detail=f"No achievements found for member: {member_name}"
+        )
+    
+    achievements = []
+    for cert_doc in certificates:
+        # Fetch signatures for each certificate
+        signatures = get_signatures_by_ids(cert_doc.get("signatures", []))
+        cert_doc["signatures"] = signatures
+        
+        cert = Certificate(**cert_doc)
+        img_b64 = generate_certificate_image(cert)
+        
+        cert_dict = cert.dict(by_alias=True)
+        cert_dict["image_b64"] = img_b64
+        achievements.append(cert_dict)
+    
+    logger.info("Found %d achievement(s) for member: %s", len(achievements), member_name)
+    
+    return {
+        "member": member_name,
+        "total_achievements": len(achievements),
+        "achievements": achievements
+    }
 
 
 # Note: To use the PORT variable, run the server with:

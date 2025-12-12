@@ -5,6 +5,7 @@ from .db_utils import (
     seed_certificates,
     seed_users,
     get_certificate_by_credential,
+    get_certificates_by_member,
     get_signatures_by_ids,
     get_user_by_email,
     lifespan
