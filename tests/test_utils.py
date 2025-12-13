@@ -15,9 +15,9 @@ def test_generate_credential_id():
     assert len(cred_id) > 0
     assert cred_id[0].islower()  
 
-@patch("utils.db_utils.db")
+@patch("src.utils.db_utils.db")
 def test_get_certificate_by_credential(mock_db):
-    fake_cert = {"credentialId": "abc123", "_id": 123}
+    fake_cert = {"credentialId": "abc123", "_id": "123"}
     mock_collection = MagicMock()
     mock_collection.find_one.return_value = fake_cert
     mock_db.__getitem__.return_value = mock_collection
@@ -26,7 +26,7 @@ def test_get_certificate_by_credential(mock_db):
     assert result["_id"] == "123"
     assert result["credentialId"] == "abc123"
 
-@patch("utils.db_utils.db")
+@patch("src.utils.db_utils.db")
 def test_get_signatures_by_ids(mock_db, caplog):
     fake_signatures = [
         {"id": "sig1", "_id": 1},
@@ -42,7 +42,7 @@ def test_get_signatures_by_ids(mock_db, caplog):
     assert "_id" in result[0]
     assert "Signatures not found" in caplog.text
 
-@patch("utils.db_utils.db")
+@patch("src.utils.db_utils.db")
 def test_seed_signatures(mock_db):
     mock_collection = MagicMock()
     mock_collection.count_documents.return_value = 0
@@ -51,7 +51,7 @@ def test_seed_signatures(mock_db):
     seed_signatures()
     mock_collection.insert_many.assert_called()
 
-@patch("utils.db_utils.db")
+@patch("src.utils.db_utils.db")
 def test_seed_certificates(mock_db):
     mock_collection = MagicMock()
     mock_collection.count_documents.return_value = 0

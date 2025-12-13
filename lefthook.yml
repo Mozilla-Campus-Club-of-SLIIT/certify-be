@@ -1,11 +1,11 @@
 pre-commit:
   commands:
     ruff:
-      run: python -m ruff check .
+      run: ruff check .
     mypy:
       run: mypy --no-namespace-packages src
     pytest:
-      run: python -m pytest --maxfail=1 --disable-warnings
+      run: PYTHONPATH=src pytest -v tests/
 
 commit-msg:
   commands:
