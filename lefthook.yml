@@ -1,0 +1,13 @@
+pre-commit:
+  commands:
+    ruff:
+      run: python -m ruff check .
+    mypy:
+      run: mypy --no-namespace-packages src
+    pytest:
+      run: python -m pytest --maxfail=1 --disable-warnings
+
+commit-msg:
+  commands:
+    validate-commit-msg:
+      run: python scripts/validate_commit_msg.py {1}

@@ -1,13 +1,13 @@
-import os
-from fastapi import HTTPException, Request
-from passlib.context import CryptContext
-from fastapi.security import OAuth2PasswordBearer
-from jose import jwt
 from datetime import datetime, timedelta, timezone
 
-from src.config import SECRET_KEY, ALGORITHM, ACCESS_TOKEN_EXPIRE_MINUTES
-from src.utils.logging_utils import setup_logging
+from fastapi import HTTPException, Request
+from fastapi.security import OAuth2PasswordBearer
+from jose import jwt
+from passlib.context import CryptContext
+
+from src.config import ACCESS_TOKEN_EXPIRE_MINUTES, ALGORITHM, SECRET_KEY
 from src.utils.db_utils import get_user_by_email
+from src.utils.logging_utils import setup_logging
 
 logger = setup_logging(__name__)
 pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
