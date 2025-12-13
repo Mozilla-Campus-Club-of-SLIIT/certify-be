@@ -1,7 +1,10 @@
-from pydantic import BaseModel, Field, field_validator
 from datetime import date, datetime
 from typing import List
+
+from pydantic import BaseModel, Field, field_validator
+
 from .signature import Signature
+
 
 class Certificate(BaseModel):
     id: str = Field(..., alias="_id", description="MongoDB ObjectId")

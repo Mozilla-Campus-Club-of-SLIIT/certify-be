@@ -1,7 +1,7 @@
-import random
 import secrets
 import string
 from uuid import uuid4
+
 from src.utils.logging_utils import setup_logging
 
 logger = setup_logging(__name__)

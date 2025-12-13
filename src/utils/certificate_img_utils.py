@@ -1,6 +1,7 @@
-from PIL import Image, ImageDraw, ImageFont, ImageFilter
 import io
-import base64
+
+from PIL import Image, ImageDraw, ImageFont
+
 
 # Category-based style configuration
 def get_certificate_style(category_code: str):
