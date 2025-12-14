@@ -1,0 +1,26 @@
+# Python cache
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+
+# Virtual environments
+venv/
+.venv/
+
+# Environment files (do NOT include secrets in image)
+.env
+.env.*
+
+# Build artifacts
+build/
+dist/
+.pytest_cache/
+
+# Git
+.git/
+.gitignore
+
+# OS / Editor
+.DS_Store
+.vscode/
