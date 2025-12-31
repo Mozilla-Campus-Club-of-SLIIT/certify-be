@@ -1,13 +1,7 @@
-from .auth_utils import (
-    authenticate_user,
-    create_access_token,
-    oauth2_scheme,
-    process_login_request,
-    pwd_context,
-    verify_password,
-)
+from .auth_utils import role_required
 from .common_utils import generate_credential_id
 from .db_utils import (
+    add_certificate,
     get_certificate_by_credential,
     get_signatures_by_ids,
     get_user_by_email,
@@ -29,11 +23,7 @@ __all__ = [
     "get_signatures_by_ids",
     "get_user_by_email",
     "lifespan",
-    "authenticate_user",
-    "create_access_token",
-    "verify_password",
-    "oauth2_scheme",
-    "pwd_context",
-    "process_login_request",
     "generate_credential_id",
+    "role_required",
+    "add_certificate"
 ]
