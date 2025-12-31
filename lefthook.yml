@@ -1,0 +1,13 @@
+pre-commit:
+  commands:
+    ruff:
+      run: ruff check .
+    mypy:
+      run: mypy --no-namespace-packages src
+    pytest:
+      run: PYTHONPATH=src pytest -v tests/
+
+commit-msg:
+  commands:
+    validate-commit-msg:
+      run: python scripts/validate_commit_msg.py {1}

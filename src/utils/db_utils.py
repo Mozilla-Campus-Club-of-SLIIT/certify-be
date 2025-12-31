@@ -1,14 +1,15 @@
-from datetime import date
-from contextlib import asynccontextmanager
 import os
+from contextlib import asynccontextmanager
+from datetime import date
 from typing import Optional
-from dotenv import load_dotenv
-from fastapi import HTTPException, FastAPI
-from pymongo import MongoClient
-from passlib.context import CryptContext
 
-from .logging_utils import setup_logging
+from dotenv import load_dotenv
+from fastapi import FastAPI
+from passlib.context import CryptContext
+from pymongo import MongoClient
+
 from .common_utils import generate_credential_id
+from .logging_utils import setup_logging
 
 load_dotenv()
 
