@@ -1,12 +1,15 @@
-from fastapi import FastAPI, HTTPException, Request
+from fastapi import FastAPI, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
+from fastapi.params import Depends
+from fastapi.responses import JSONResponse
 
-from src.models import Certificate
+from src.models import Certificate, CertificateCreate
 from src.utils import (
+    add_certificate,
     get_certificate_by_credential,
     get_signatures_by_ids,
     lifespan,
-    process_login_request,
+    role_required,
     setup_db,
     setup_logging,
 )
@@ -31,11 +34,6 @@ async def read_root():
     logger.info("Root endpoint '/' was called")
     return {"message": "Hello, Certify!"}
     
-@app.post("/api/login")
-async def login(request: Request):
-    return await process_login_request(request)
-
-
 @app.get("/api/certificate/{credential_id}")
 async def get_certificate(credential_id: str):
     logger.info(credential_id)
@@ -54,6 +52,20 @@ async def get_certificate(credential_id: str):
     cert_dict["image_b64"] = img_b64
     return cert_dict
 
+@app.post("/api/certificate/new")
+async def create_certificate(
+    payload: CertificateCreate,
+    user=Depends(role_required(["admin"]))
+):
+    cert = add_certificate(payload.dict())
+
+    return JSONResponse(
+        status_code=201,
+        content={
+            "message": "Certificate created successfully",
+            "certificate": cert
+        }
+    )
 
 # Note: To use the PORT variable, run the server with:
 # python -m uvicorn src.main:app --reload --port %PORT%

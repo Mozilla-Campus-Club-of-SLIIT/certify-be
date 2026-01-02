@@ -121,3 +121,28 @@ def get_user_by_email(email: str):
     else:
         logger.warning("No user found with email: %s", email)
     return user
+
+def add_certificate(data: dict) -> dict:
+    certificates = db["certificates"]
+
+    cert_doc = {
+        "credentialId": generate_credential_id(),
+        "name": data["name"],
+        "course": data["course"],
+        "categoryCode": data["categoryCode"],
+        "categoryName": data["categoryName"],
+        "dateIssued": date.today().isoformat(),
+        "issuer": data["issuer"],
+        "signatures": data["signatures"]
+    }
+
+    result = certificates.insert_one(cert_doc)
+    cert_doc["_id"] = str(result.inserted_id)
+
+    logger.info(
+        "Certificate created for %s with credentialId %s",
+        cert_doc["name"],
+        cert_doc["credentialId"]
+    )
+
+    return cert_doc
