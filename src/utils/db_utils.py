@@ -87,7 +87,7 @@ async def lifespan(app: FastAPI):
 
     seed_signatures()
     seed_certificates()
-    seed_users()
+    # seed_users()
 
     yield
 
