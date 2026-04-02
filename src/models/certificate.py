@@ -10,6 +10,7 @@ class Certificate(BaseModel):
     id: str = Field(..., alias="_id", description="MongoDB ObjectId")
     credentialId: str = Field(..., description="Unique credential ID")
     name: str = Field(..., description="Recipient's name")
+    email: str | None = Field(None, description="Recipient's email")
     course: str = Field(..., description="Course name")
     categoryCode: str = Field(..., description="Short code for certificate type")
     categoryName: str = Field(..., description="Full name of certificate type")

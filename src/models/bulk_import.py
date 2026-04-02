@@ -3,16 +3,28 @@ from typing import List
 from pydantic import BaseModel, Field, field_validator
 
 
-class CertificateCreate(BaseModel):
+class BulkImportUser(BaseModel):
     name: str = Field(..., min_length=1)
     email: str = Field(..., min_length=1)
+
+    @field_validator("name", "email")
+    @classmethod
+    def validate_non_empty_text(cls, value: str) -> str:
+        value = value.strip()
+        if not value:
+            raise ValueError("Field cannot be empty")
+        return value
+
+
+class CertificateBulkImportCreate(BaseModel):
+    users: List[BulkImportUser] = Field(..., min_length=1, max_length=100)
     course: str = Field(..., min_length=1)
     categoryCode: str = Field(..., min_length=1)
     categoryName: str = Field(..., min_length=1)
     issuer: str = Field(..., min_length=1)
     signatures: List[str] = Field(..., min_length=1)
 
-    @field_validator("name", "email", "course", "categoryCode", "categoryName", "issuer")
+    @field_validator("course", "categoryCode", "categoryName", "issuer")
     @classmethod
     def validate_non_empty_text(cls, value: str) -> str:
         value = value.strip()

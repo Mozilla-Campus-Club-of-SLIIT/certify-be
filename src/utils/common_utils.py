@@ -12,3 +12,9 @@ def generate_credential_id() -> str:
     credential_id = f"{prefix}{raw_uuid}"
     logger.info(f"Generated credential ID: {credential_id}")
     return credential_id
+
+
+def generate_import_id() -> str:
+    import_id = str(uuid4()).replace("-", "")
+    logger.info(f"Generated import ID: {import_id}")
+    return import_id
