@@ -2,7 +2,9 @@ from .auth_utils import role_required
 from .common_utils import generate_credential_id
 from .db_utils import (
     add_certificate,
+    add_certificates_bulk,
     get_certificate_by_credential,
+    get_certificates_by_import_id,
     get_signatures_by_ids,
     get_user_by_email,
     lifespan,
@@ -25,5 +27,7 @@ __all__ = [
     "lifespan",
     "generate_credential_id",
     "role_required",
-    "add_certificate"
+    "add_certificate",
+    "add_certificates_bulk",
+    "get_certificates_by_import_id",
 ]

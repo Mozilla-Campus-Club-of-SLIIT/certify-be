@@ -8,7 +8,7 @@ from fastapi import FastAPI
 from passlib.context import CryptContext
 from pymongo import MongoClient
 
-from .common_utils import generate_credential_id
+from .common_utils import generate_credential_id, generate_import_id
 from .logging_utils import setup_logging
 
 load_dotenv()
@@ -128,6 +128,7 @@ def add_certificate(data: dict) -> dict:
     cert_doc = {
         "credentialId": generate_credential_id(),
         "name": data["name"],
+        "email": data["email"].strip(),
         "course": data["course"],
         "categoryCode": data["categoryCode"],
         "categoryName": data["categoryName"],
@@ -146,3 +147,43 @@ def add_certificate(data: dict) -> dict:
     )
 
     return cert_doc
+
+
+def add_certificates_bulk(data: dict) -> dict:
+    certificates = db["certificates"]
+    import_id = generate_import_id()
+    today = date.today().isoformat()
+
+    cert_docs = []
+    for user in data["users"]:
+        cert_docs.append({
+            "credentialId": generate_credential_id(),
+            "importId": import_id,
+            "name": user["name"],
+            "email": user["email"],
+            "course": data["course"],
+            "categoryCode": data["categoryCode"],
+            "categoryName": data["categoryName"],
+            "dateIssued": today,
+            "issuer": data["issuer"],
+            "signatures": data["signatures"],
+        })
+
+    certificates.insert_many(cert_docs)
+    logger.info(
+        "Bulk import created %d certificate(s) with importId %s",
+        len(cert_docs),
+        import_id,
+    )
+
+    return {
+        "importId": import_id,
+        "count": len(cert_docs),
+    }
+
+
+def get_certificates_by_import_id(import_id: str) -> list[dict]:
+    certificates = list(db["certificates"].find({"importId": import_id}))
+    for cert in certificates:
+        cert["_id"] = str(cert["_id"])
+    return certificates
