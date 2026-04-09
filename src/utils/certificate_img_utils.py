@@ -124,18 +124,18 @@ def get_certificate_style(category_code: str):
             "title": None,
             "gradient_start": (30, 228, 73),
             "gradient_end": (0, 0, 0),
-            "background": (7, 9, 22),
+            "background": (255, 255, 255),
             "seal_color": (255, 193, 7),
-            "subtitle_color": (255, 255, 255),
-            "text_color": (255, 255, 255),
-            "line_color": (255, 255, 255),
+            "subtitle_color": (0, 0, 0),
+            "text_color": (0, 0, 0),
+            "line_color": (0, 0, 0),
             "width": 900,
             "height": 600,
             "element_spacing": 60,
             "sig_img_size": (100, 42),
             "event_extra_padding": 20,
             "event_bottom_spacing": 80,
-            "logo_image": "codenight.png"
+            "logo_image": "sliitmozilla-logo.png"
         }
     }
     # Set new default to HOLAMOZILLA2025 if not matched
