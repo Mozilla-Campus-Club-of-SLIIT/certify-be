@@ -151,7 +151,6 @@ def generate_certificate_image(cert):
     height = style.get("height", 600)
     image = Image.new("RGB", (width, height), style.get("background", (255, 255, 255)))
     draw = ImageDraw.Draw(image)
-    text_color = style.get("text_color", "black")
     
     # Add colorful gradient borders (top and bottom) - based on style gradient
     border_height = 15
@@ -177,7 +176,7 @@ def generate_certificate_image(cert):
     element_spacing = style.get("element_spacing", 80)
     
     # Load and paste logo
-    logo_path = os.path.join(os.path.dirname(__file__), "../assets/" + style.get("logo_image", "sliitmozilla-logo.png"))
+    logo_path = os.path.join(os.path.dirname(__file__), "../assets/sliitmozilla-logo.png")
     try:
         logo = Image.open(logo_path).convert("RGBA")
         logo_width = 140
@@ -227,7 +226,7 @@ def generate_certificate_image(cert):
     title_bbox = draw.textbbox((0, 0), title_text, font=font_title)
     title_width = title_bbox[2] - title_bbox[0]
     title_x = width // 2 - title_width // 2
-    draw.text((title_x, title_y), title_text, font=font_title, fill=text_color)
+    draw.text((title_x, title_y), title_text, font=font_title, fill="black")
 
     # Draw subtitle - "We are proudly present this to"
     subtitle_y = title_y + element_spacing
@@ -236,15 +235,14 @@ def generate_certificate_image(cert):
     subtitle_bbox = draw.textbbox((0, 0), subtitle_text, font=font_subtitle)
     subtitle_width = subtitle_bbox[2] - subtitle_bbox[0]
     # Force subtitle color to black (request override ignoring style color)
-    # uhh.....
-    subtitle_color = style.get("subtitle_color", (0, 0, 0))
+    subtitle_color = (0, 0, 0)
     draw.text((width // 2 - subtitle_width // 2, subtitle_y), subtitle_text, font=font_subtitle, fill=subtitle_color)
 
     # Draw recipient name (larger, bold style)
     name_y = subtitle_y + element_spacing
     name_bbox = draw.textbbox((0, 0), cert.name, font=font_name)
     name_width = name_bbox[2] - name_bbox[0]
-    draw.text((width // 2 - name_width // 2, name_y), cert.name, font=font_name, fill=text_color)
+    draw.text((width // 2 - name_width // 2, name_y), cert.name, font=font_name, fill="black")
 
     # Draw event description - with red highlight for event name
     # Add extra padding above event text for better visual separation from the name
@@ -277,10 +275,10 @@ def generate_certificate_image(cert):
         for line in lines:
             line_bbox = draw.textbbox((0, 0), line, font=font_body)
             line_width = line_bbox[2] - line_bbox[0]
-            draw.text((width // 2 - line_width // 2, y_offset), line, font=font_body, fill=text_color)
+            draw.text((width // 2 - line_width // 2, y_offset), line, font=font_body, fill="black")
             y_offset += 20
     else:
-        draw.text((width // 2 - event_width // 2, event_y), event_text, font=font_body, fill=text_color)
+        draw.text((width // 2 - event_width // 2, event_y), event_text, font=font_body, fill="black")
 
     # Measure baseline metrics for later vertical balancing
     date_str = str(cert.dateIssued)
@@ -364,19 +362,18 @@ def generate_certificate_image(cert):
             logger.error(f"Error loading left signature image: {e}")
         # Draw line below signature
         line_y = sig_y + sig_img_size[1] + 5
-        line_color = style.get("line_color", "black")
-        draw.line([(sig_x_left, line_y), (sig_x_left + sig_img_size[0], line_y)], fill=line_color, width=1)
+        draw.line([(sig_x_left, line_y), (sig_x_left + sig_img_size[0], line_y)], fill="black", width=1)
         # Centered name and post below line
         left_name = signatures[0].name
         name_bbox = draw.textbbox((0,0), left_name, font=font_sig_name)
         name_w = name_bbox[2] - name_bbox[0]
         name_x = sig_x_left + (sig_img_size[0] - name_w) // 2
-        draw.text((name_x, line_y + 5), left_name, font=font_sig_name, fill=text_color)
+        draw.text((name_x, line_y + 5), left_name, font=font_sig_name, fill="black")
         left_post = signatures[0].post
         post_text_bbox = draw.textbbox((0,0), left_post, font=font_sig_post)
         post_w = post_text_bbox[2] - post_text_bbox[0]
         post_x = sig_x_left + (sig_img_size[0] - post_w) // 2
-        draw.text((post_x, line_y + 23), left_post, font=font_sig_post, fill=text_color)
+        draw.text((post_x, line_y + 23), left_post, font=font_sig_post, fill="black")
         left_post_bottom = line_y + 23 + (post_text_bbox[3]-post_text_bbox[1])
 
     if len(signatures) > 1:
@@ -391,18 +388,18 @@ def generate_certificate_image(cert):
             logger.error(f"Error loading right signature image: {e}")
         # Draw line below signature
         line_y = sig_y + sig_img_size[1] + 5
-        draw.line([(sig_x_right, line_y), (sig_x_right + sig_img_size[0], line_y)], fill=line_color, width=1)
+        draw.line([(sig_x_right, line_y), (sig_x_right + sig_img_size[0], line_y)], fill="black", width=1)
         # Centered name and post below line
         right_name = signatures[1].name
         r_name_bbox = draw.textbbox((0,0), right_name, font=font_sig_name)
         r_name_w = r_name_bbox[2] - r_name_bbox[0]
         r_name_x = sig_x_right + (sig_img_size[0] - r_name_w) // 2
-        draw.text((r_name_x, line_y + 5), right_name, font=font_sig_name, fill=text_color)
+        draw.text((r_name_x, line_y + 5), right_name, font=font_sig_name, fill="black")
         right_post = signatures[1].post
         post_text_bbox_r = draw.textbbox((0,0), right_post, font=font_sig_post)
         r_post_w = post_text_bbox_r[2] - post_text_bbox_r[0]
         r_post_x = sig_x_right + (sig_img_size[0] - r_post_w) // 2
-        draw.text((r_post_x, line_y + 23), right_post, font=font_sig_post, fill=text_color)
+        draw.text((r_post_x, line_y + 23), right_post, font=font_sig_post, fill="black")
         right_post_bottom = line_y + 23 + (post_text_bbox_r[3]-post_text_bbox_r[1])
 
     # Draw date centered below the lowest signature text (or below seal if no signatures)
@@ -411,7 +408,7 @@ def generate_certificate_image(cert):
     date_y = lowest + date_top_padding
     date_bbox_final = draw.textbbox((0, 0), date_str, font=font_body)
     date_width = date_bbox_final[2] - date_bbox_final[0]
-    draw.text((seal_center_x - date_width // 2, date_y), date_str, font=font_body, fill=text_color)
+    draw.text((seal_center_x - date_width // 2, date_y), date_str, font=font_body, fill="black")
 
     # Save image to bytes
     img_bytes = io.BytesIO()
