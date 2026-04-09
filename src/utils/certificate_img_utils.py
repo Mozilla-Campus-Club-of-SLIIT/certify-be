@@ -23,7 +23,7 @@ def get_certificate_style(category_code: str):
             "gradient_end": (255, 165, 0),     # orange
             "background": (255, 255, 255),
             "seal_color": (255, 193, 7),
-            "subtitle_color": (0, 0, 0),
+            "subtitle_color": (0, 0, 255),
             # Layout / size overrides (zoomed out)
             "width": 900,
             "height": 600,
@@ -40,7 +40,7 @@ def get_certificate_style(category_code: str):
             "gradient_end": (255, 165, 0),     # orange
             "background": (255, 255, 255),
             "seal_color": (255, 193, 7),
-            "subtitle_color": (0, 0, 0),
+            "subtitle_color": (0, 0, 255),
             "width": 900,
             "height": 600,
             "element_spacing": 60,
@@ -54,7 +54,7 @@ def get_certificate_style(category_code: str):
             "gradient_end": (72, 61, 139),     # dark slate blue
             "background": (255, 255, 255),     # white background for clean appreciation cards
             "seal_color": (240, 180, 0),
-            "subtitle_color": (0, 0, 0),
+            "subtitle_color": (40, 40, 40),
             "width": 900,
             "height": 600,
             "element_spacing": 60,
@@ -68,7 +68,7 @@ def get_certificate_style(category_code: str):
             "gradient_end": (0, 200, 255),
             "background": (245, 250, 255),
             "seal_color": (240, 180, 0),
-            "subtitle_color": (0, 0, 0),
+            "subtitle_color": (10, 90, 160),
             "width": 900,
             "height": 600,
             "element_spacing": 60,
@@ -82,7 +82,7 @@ def get_certificate_style(category_code: str):
             "gradient_end": (180, 180, 180),
             "background": (255, 255, 255),
             "seal_color": (212, 175, 55),  # metallic gold tone
-            "subtitle_color": (0, 0, 0),
+            "subtitle_color": (80, 80, 80),
             "width": 900,
             "height": 600,
             "element_spacing": 60,
@@ -96,7 +96,7 @@ def get_certificate_style(category_code: str):
             "gradient_end": (238, 130, 238),
             "background": (252, 248, 255),
             "seal_color": (180, 60, 200),
-            "subtitle_color": (0, 0, 0),
+            "subtitle_color": (120, 40, 160),
             "width": 900,
             "height": 600,
             "element_spacing": 60,
@@ -110,7 +110,7 @@ def get_certificate_style(category_code: str):
             "gradient_end": (126, 167, 182),
             "background": (255, 255, 255),
             "seal_color": (255, 193, 7),
-            "subtitle_color": (0, 0, 0),
+            "subtitle_color": (22, 29, 34),
             "text_color": (22, 29, 34),
             "line_color": (22, 29, 34),
             "width": 900,
