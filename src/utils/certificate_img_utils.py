@@ -136,6 +136,20 @@ def get_certificate_style(category_code: str):
             "event_extra_padding": 20,
             "event_bottom_spacing": 80,
             "logo_image": "sliitmozilla-logo.png"
+        },
+        "DEPLOYIT": {
+            "title": None,
+            "gradient_start": (255, 219, 1),
+            "gradient_end": (255, 140, 0),
+            "background": (255, 255, 255),
+            "seal_color": (255, 193, 7),
+            "subtitle_color": (0, 0, 0),
+            "width": 900,
+            "height": 600,
+            "element_spacing": 60,
+            "sig_img_size": (100, 42),
+            "event_extra_padding": 20,
+            "event_bottom_spacing": 80
         }
     }
     # Set new default to HOLAMOZILLA2025 if not matched
